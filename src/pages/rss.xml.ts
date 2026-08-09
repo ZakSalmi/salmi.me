@@ -32,7 +32,7 @@ export const GET: APIRoute = async ({ site }) => {
 	const buildDate = lastBuildDate ? `<lastBuildDate>${lastBuildDate.toUTCString()}</lastBuildDate>` : '';
 
 	return new Response(
-		`<?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Zakaria Salmi</title><description>Notes and essays by Zakaria Salmi.</description><link>${channelURL}</link><atom:link href="${feedURL}" rel="self" type="application/rss+xml"/><language>en</language>${buildDate}${items}</channel></rss>`,
+		`<?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Zakaria Salmi</title><description>Notes on becoming a better data scientist.</description><link>${channelURL}</link><atom:link href="${feedURL}" rel="self" type="application/rss+xml"/><language>en</language>${buildDate}${items}</channel></rss>`,
 		{ headers: { 'Content-Type': 'application/rss+xml; charset=utf-8' } },
 	);
 };

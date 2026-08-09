@@ -7,8 +7,9 @@ const posts = (await getCollection('writing', ({ data }) => !data.draft)).sort(
 );
 ---
 
-<BaseLayout title="Writing" description="Notes and essays by Zakaria Salmi.">
+<BaseLayout title="Writing" description="Notes on becoming a better data scientist.">
 	<h1>Writing</h1>
+	<p class="writing-tagline">Notes on becoming a better data scientist.</p>
 	<ul class="entries">
 		{posts.map((post) => (
 			<li>

@@ -53,6 +53,7 @@ const posts = (await getCollection('writing', ({ data }) => !data.draft))
 
 	<section class="home-writing" aria-labelledby="writing-heading">
 		<h2 id="writing-heading">Blog</h2>
+		<p class="writing-tagline">Notes on becoming a better data scientist.</p>
 		<div class="post-list">
 			{posts.map((post) => (
 				<a class="post-card" href={`/writing/${post.id}/`}>

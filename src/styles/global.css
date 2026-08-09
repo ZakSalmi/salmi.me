@@ -284,7 +284,14 @@ strong {
 }
 
 .home-writing > h2 {
-	margin-bottom: 0.9rem;
+	margin-bottom: 0.35rem;
+}
+
+.writing-tagline {
+	margin-bottom: 1.2rem;
+	color: var(--muted);
+	font-family: var(--serif);
+	font-size: 0.9rem;
 }
 
 .post-list {
