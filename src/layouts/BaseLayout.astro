@@ -186,7 +186,7 @@ const navigation = [
 					window.clearTimeout(shootingTimer);
 					const delay = firstShootingStar
 						? 3500 + Math.random() * 3500
-						: 9000 + Math.random() * 9000;
+						: 5000 + Math.random() * 3000;
 					firstShootingStar = false;
 					shootingTimer = window.setTimeout(() => {
 						shootingStar = {
