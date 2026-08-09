@@ -1,0 +1,257 @@
+\documentclass[10pt, a4paper]{article}
+
+% Packages:
+\usepackage[
+    ignoreheadfoot,
+    top=1.2 cm,
+    bottom=1.2 cm,
+    left=1.6 cm,
+    right=1.6 cm,
+    footskip=0.8 cm,
+]{geometry}
+\usepackage{titlesec}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage[dvipsnames]{xcolor}
+\definecolor{primaryColor}{RGB}{0, 0, 0}
+\usepackage{enumitem}
+\usepackage{amsmath}
+\usepackage[
+    pdftitle={Zakaria Salmi's CV},
+    pdfauthor={Zakaria Salmi},
+    pdfcreator={LaTeX},
+    colorlinks=true,
+    urlcolor=primaryColor
+]{hyperref}
+\usepackage{paracol}
+\usepackage{needspace}
+\usepackage{iftex}
+
+\ifPDFTeX
+    \input{glyphtounicode}
+    \pdfgentounicode=1
+    \usepackage[T1]{fontenc}
+    \usepackage[utf8]{inputenc}
+    \usepackage{lmodern}
+\fi
+
+\usepackage{charter}
+
+% Settings:
+\pagestyle{empty}
+\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\columnsep}{0.15cm}
+\pagenumbering{gobble}
+
+\titleformat{\section}{\needspace{4\baselineskip}\bfseries\large}{}{0pt}{}[\vspace{1pt}\titlerule]
+\titlespacing{\section}{-1pt}{0.2 cm}{0.15 cm}
+
+\renewcommand\labelitemi{$\vcenter{\hbox{\small$\bullet$}}$}
+\newenvironment{highlights}{
+    \begin{itemize}[
+        topsep=0.10 cm,
+        parsep=0.10 cm,
+        partopsep=0pt,
+        itemsep=0pt,
+        leftmargin=10pt
+    ]
+}{
+    \end{itemize}
+}
+
+\newenvironment{onecolentry}{\par}{\par}
+
+\newenvironment{twocolentry}[2][]{
+    \def\secondColumn{#2}
+    \setcolumnwidth{\fill, 4.5 cm}
+    \begin{paracol}{2}
+}{
+    \switchcolumn \raggedleft \secondColumn
+    \end{paracol}
+}
+
+\newenvironment{header}{
+    \centering\linespread{1.5}
+}{
+    \par
+}
+
+\newcommand{\AND}{\kern 5.0 pt | \kern 5.0 pt}
+
+\begin{document}
+
+\begin{header}
+    \fontsize{25 pt}{25 pt}\selectfont \textbf{Zakaria Salmi}
+
+    \vspace{5 pt}
+
+    \normalsize
+    Budapest, Hungary
+    \AND
+    \href{mailto:zakaria@salmi.me}{zakaria@salmi.me}
+    \AND
+    \href{https://salmi.me}{salmi.me}
+    \AND
+    \href{https://linkedin.com/in/zakaria-salmi}{linkedin.com/in/zakaria-salmi}
+\end{header}
+
+\vspace{-0.1cm}
+
+%-------------------------------------------------------------------------------
+% EXPERIENCE
+%-------------------------------------------------------------------------------
+\section{Experience}
+
+\begin{twocolentry}{Jul 2026 -- Present}
+    \textbf{Data Scientist -- Acceptable Use Policy}, Wise -- Budapest, HU
+\end{twocolentry}
+\begin{onecolentry}
+    \begin{highlights}
+        \item \textbf{End-to-end ML for AUP:} Development of two ML systems: one to detect transfers involving crypto platforms and another to assess business activity on personal accounts, spanning problem framing, data and labels, modelling, evaluation, and production integration.
+    \end{highlights}
+\end{onecolentry}
+
+\vspace{0.1 cm}
+
+\begin{twocolentry}{Oct 2024 -- Jun 2026}
+    \textbf{Product analyst / Data Scientist -- KYC \& AML}, Wise -- Budapest, HU
+\end{twocolentry}
+\begin{onecolentry}
+    \begin{highlights}
+        \item \textbf{Production ML for KYC:} Designed, trained, and deployed a real-time multi-signal models to global shadow mode, achieving \textbf{3x lift over the rule-based baseline} with a staged validation approach.
+        \item \textbf{Experimentation \& causal inference:} Designed power-analyzed A/B tests and phased rollouts for KYC controls; one experiment delivered a \textbf{27\% reduction in financial crime} with positive business impact.
+        \item \textbf{Decision-making under uncertainty:} Led clustering and explainability analysis across 17k+ high-risk profiles, showing that targeted-review routing would not be effective and preventing investment in a low-value control.
+        \item \textbf{Reusable data systems:} Co-designed an assurance pipeline covering 7 global KYC controls and built anomaly-alerting infrastructure reused by other teams; partnered with engineers and PMs from scoping through rollout.
+    \end{highlights}
+\end{onecolentry}
+
+\vspace{0.1 cm}
+
+\begin{twocolentry}{Jun 2023 -- Sep 2023}
+    \textbf{Product Analyst Intern}, Wise -- Budapest, HU
+\end{twocolentry}
+\begin{onecolentry}
+    \begin{highlights}
+        \item Built customer segmentation model analyzing transaction patterns and loyalty metrics; identified high-value segments for targeted campaigns.
+        % \item Analyzed churn drivers related to due diligence; delivered data-driven recommendations that streamlined compliance flow.
+    \end{highlights}
+\end{onecolentry}
+
+\vspace{0.1 cm}
+
+\begin{twocolentry}{Jun 2022 -- Mar 2023}
+    \textbf{Quantitative Developer Intern -- FX}, Citi -- Budapest, HU
+\end{twocolentry}
+\begin{onecolentry}
+    \begin{highlights}
+        \item Automated OPA report and Model Analysis Framework generation using Python; built grid management system with worker scheduling, eliminating 40 hours/month of manual work.
+    \end{highlights}
+\end{onecolentry}
+
+%-------------------------------------------------------------------------------
+% PUBLICATION
+%-------------------------------------------------------------------------------
+\section{Publication}
+
+\begin{twocolentry}{Sep 2023}
+    \href{https://ceur-ws.org/Vol-3498/paper5.pdf}{\textbf{Data Augmentation for Pseudo-Time Series Using GANs}} -- ITAT 2023, Slovakia
+\end{twocolentry}
+\begin{onecolentry}
+    \begin{highlights}
+        \item First author. Designed LSTM-GAN architecture (128-cell LSTM, adversarial training, Gaussian post-processing) for synthetic time series generation; validated using silhouette score, MSE, RMSE.
+    \end{highlights}
+\end{onecolentry}
+
+%-------------------------------------------------------------------------------
+% EDUCATION
+%-------------------------------------------------------------------------------
+\section{Education}
+
+\begin{twocolentry}{Sep 2021 -- Jun 2024}
+    \textbf{Eötvös Loránd University}, MSc in Computer Science and Data Science -- Budapest, HU
+\end{twocolentry}
+\begin{onecolentry}
+    \begin{highlights}
+        \item Stipendium Hungaricum Excellence Scholarship. Coursework: ML, Deep Learning, AI, Numerical Optimization.
+    \end{highlights}
+\end{onecolentry}
+
+\vspace{0.1 cm}
+
+\begin{twocolentry}{Sep 2017 -- Jun 2021}
+    \textbf{Ibn Tofail University}, BSc Computer Science \& Mathematics -- Kenitra, Morocco
+\end{twocolentry}
+\begin{onecolentry}
+    \begin{highlights}
+        \item Graduated with Distinction.
+    \end{highlights}
+\end{onecolentry}
+
+%-------------------------------------------------------------------------------
+% ACHIEVEMENTS
+%-------------------------------------------------------------------------------
+\section{Achievements}
+
+\begin{twocolentry}{Jul 2019}
+    \textbf{Bassar} -- Startup Weekend, Tangier
+\end{twocolentry}
+\begin{onecolentry}
+    \begin{highlights}
+        \item Co-founded award-winning startup: text-to-speech with tactile feedback for visually impaired users.
+    \end{highlights}
+\end{onecolentry}
+
+\vspace{0.1 cm}
+
+\begin{twocolentry}{Oct 2019}
+    \textbf{NASA Space Apps Challenge} -- Casablanca
+\end{twocolentry}
+\begin{onecolentry}
+    \begin{highlights}
+        \item Analyzed NASA satellite data on energy usage and green spaces in Morocco.
+    \end{highlights}
+\end{onecolentry}
+
+\vspace{0.1 cm}
+
+\begin{twocolentry}{Apr 2019}
+    \textbf{AGRI-FIN} -- FinTech Hackathon, 1st Place
+\end{twocolentry}
+\begin{onecolentry}
+    \begin{highlights}
+        \item Built mobile app for Crédit Agricole with expense tracking, loan management, and chatbot.
+    \end{highlights}
+\end{onecolentry}
+
+%-------------------------------------------------------------------------------
+% SKILLS
+%-------------------------------------------------------------------------------
+\section{Technical Skills}
+
+\begin{onecolentry}
+    \textbf{Statistics \& ML:} A/B Testing, Power Analysis, Causal Inference, Hypothesis Testing, Metric Design, Logistic Regression, Clustering (KMeans, HDBSCAN), GANs, LSTM, Feature Engineering
+\end{onecolentry}
+
+\vspace{0.1 cm}
+
+\begin{onecolentry}
+    \textbf{LLM/NLP:} RAG Pipelines, LLM Gateway, Embeddings, Vector DBs (FAISS), Prompt Engineering
+\end{onecolentry}
+
+\vspace{0.1 cm}
+
+\begin{onecolentry}
+    \textbf{Data \& Tools:} Python (Pandas, NumPy, Scikit-learn), SQL, dbt, Airflow, Git
+\end{onecolentry}
+
+%-------------------------------------------------------------------------------
+% LANGUAGES
+%-------------------------------------------------------------------------------
+\section{Languages}
+
+\begin{onecolentry}
+    \textbf{Fluent:} Arabic (Native), English (C1), French (C1) \quad \textbf{Intermediate:} German (B1 Goethe institute)
+\end{onecolentry}
+
+\end{document}

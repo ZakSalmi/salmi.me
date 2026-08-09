@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+	<style>
+		.background { fill: #f4f1e8; }
+		.initials { fill: #202522; }
+
+		@media (prefers-color-scheme: dark) {
+			.background { fill: #010309; }
+			.initials { fill: #f2f5f9; }
+		}
+	</style>
+	<rect class="background" width="64" height="64" rx="12" />
+	<text
+		class="initials"
+		x="32"
+		y="40"
+		text-anchor="middle"
+		font-family="Arial, Helvetica, sans-serif"
+		font-size="25"
+		font-weight="700"
+		letter-spacing="-1"
+	>ZS</text>
+</svg>

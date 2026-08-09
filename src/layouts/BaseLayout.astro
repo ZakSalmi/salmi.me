@@ -1,0 +1,310 @@
+---
+import '../styles/global.css';
+
+interface Props {
+	title?: string;
+	description?: string;
+}
+
+const {
+	title = 'Zakaria Salmi',
+	description = 'The personal website of Zakaria Salmi.',
+} = Astro.props;
+const pageTitle = title === 'Zakaria Salmi' ? title : `${title} · Zakaria Salmi`;
+const navigation = [
+	{ href: '/writing/', label: 'Writing' },
+	{ href: '/resume/', label: 'Resume' },
+];
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width" />
+		<meta name="description" content={description} />
+		<meta name="theme-color" content="#f4f1e8" media="(prefers-color-scheme: light)" />
+		<meta name="theme-color" content="#010309" media="(prefers-color-scheme: dark)" />
+		<meta name="generator" content={Astro.generator} />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<title>{pageTitle}</title>
+		<script is:inline>
+			try {
+				const savedTheme = localStorage.getItem('theme');
+				if (savedTheme === 'light' || savedTheme === 'dark') {
+					document.documentElement.dataset.theme = savedTheme;
+				}
+			} catch {}
+		</script>
+	</head>
+	<body>
+		<canvas class="ambient-field" aria-hidden="true"></canvas>
+		<a class="skip-link" href="#main-content">Skip to content</a>
+		<header>
+			<a class="site-name" href="/" aria-label="Zakaria Salmi, home">
+				<span aria-hidden="true">→</span> salmi.me
+			</a>
+			<div class="header-actions">
+				<nav aria-label="Primary navigation">
+					{navigation.map((item) => (
+						<a
+							href={item.href}
+							aria-current={Astro.url.pathname.startsWith(item.href) ? 'page' : undefined}
+						>
+							{item.label}
+						</a>
+					))}
+				</nav>
+				<button class="theme-toggle" type="button" aria-label="Switch to dark theme">
+					<span class="theme-toggle-icon" aria-hidden="true">◐</span>
+					<span class="theme-toggle-label">Dark</span>
+				</button>
+			</div>
+		</header>
+		<main id="main-content">
+			<slot />
+		</main>
+		<footer>
+			<span>© {new Date().getFullYear()} Zakaria Salmi</span>
+		</footer>
+		<script>
+			const root = document.documentElement;
+			const themeToggle = document.querySelector<HTMLButtonElement>('.theme-toggle');
+			const themeLabel = themeToggle?.querySelector<HTMLElement>('.theme-toggle-label');
+			const systemTheme = window.matchMedia('(prefers-color-scheme: dark)');
+			const ambientCanvas = document.querySelector<HTMLCanvasElement>('.ambient-field');
+
+			const currentTheme = () =>
+				root.dataset.theme ?? (systemTheme.matches ? 'dark' : 'light');
+
+			const updateThemeControl = () => {
+				const nextTheme = currentTheme() === 'dark' ? 'light' : 'dark';
+				if (themeLabel) themeLabel.textContent = nextTheme === 'dark' ? 'Dark' : 'Light';
+				themeToggle?.setAttribute('aria-label', `Switch to ${nextTheme} theme`);
+			};
+
+			updateThemeControl();
+
+			themeToggle?.addEventListener('click', () => {
+				const nextTheme = currentTheme() === 'dark' ? 'light' : 'dark';
+				root.dataset.theme = nextTheme;
+				try {
+					localStorage.setItem('theme', nextTheme);
+				} catch {}
+				updateThemeControl();
+				window.dispatchEvent(new Event('themechange'));
+			});
+
+			if (ambientCanvas) {
+				const context = ambientCanvas.getContext('2d');
+				const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+				const pointer = { x: 0, y: 0, active: false };
+				let points: Array<{ x: number; y: number; size: number }> = [];
+				let colour = '20, 38, 58';
+				let baseDotOpacity = 0.3;
+				let baseLineOpacity = 0.06;
+				let drawFrame = 0;
+				let shootingTimer = 0;
+				let firstShootingStar = true;
+				let shootingStar: {
+					x: number;
+					y: number;
+					angle: number;
+					length: number;
+					travel: number;
+					startedAt: number;
+					duration: number;
+				} | null = null;
+
+				const syncColour = () => {
+					const styles = getComputedStyle(root);
+					colour = styles.getPropertyValue('--ambient-canvas').trim();
+					baseDotOpacity = Number.parseFloat(styles.getPropertyValue('--ambient-dot-opacity')) || 0.22;
+					baseLineOpacity = Number.parseFloat(styles.getPropertyValue('--ambient-line-opacity')) || 0.035;
+				};
+
+				const createPoints = () => {
+					points = [];
+					let seed = 1977;
+					const random = () => {
+						seed = (seed * 1664525 + 1013904223) >>> 0;
+						return seed / 4294967296;
+					};
+					const spacing = 96;
+
+					for (let y = spacing / 2; y < window.innerHeight; y += spacing) {
+						for (let x = spacing / 2; x < window.innerWidth; x += spacing) {
+							points.push({
+								x: x + (random() - 0.5) * 48,
+								y: y + (random() - 0.5) * 48,
+								size: 0.55 + random() * 0.55,
+							});
+						}
+					}
+				};
+
+				const displacedPoint = (point: { x: number; y: number; size: number }) => {
+					if (!pointer.active || reducedMotion) return point;
+					const dx = point.x - pointer.x;
+					const dy = point.y - pointer.y;
+					const distance = Math.hypot(dx, dy);
+					const radius = 230;
+					if (distance === 0 || distance >= radius) return point;
+					const force = (1 - distance / radius) * 14;
+					return {
+						...point,
+						x: point.x + (dx / distance) * force,
+						y: point.y + (dy / distance) * force,
+					};
+				};
+
+				const scheduleShootingStar = () => {
+					if (reducedMotion || document.hidden) return;
+					window.clearTimeout(shootingTimer);
+					const delay = firstShootingStar
+						? 3500 + Math.random() * 3500
+						: 9000 + Math.random() * 9000;
+					firstShootingStar = false;
+					shootingTimer = window.setTimeout(() => {
+						shootingStar = {
+							x: -80 + Math.random() * window.innerWidth * 0.6,
+							y: 20 + Math.random() * window.innerHeight * 0.42,
+							angle: 0.28 + Math.random() * 0.22,
+							length: 75 + Math.random() * 55,
+							travel: 260 + Math.random() * 180,
+							startedAt: performance.now(),
+							duration: 850 + Math.random() * 450,
+						};
+						requestDraw();
+					}, delay);
+				};
+
+				const drawShootingStar = (timestamp: number) => {
+					if (!context || !shootingStar) return;
+					const progress = (timestamp - shootingStar.startedAt) / shootingStar.duration;
+					if (progress >= 1) {
+						shootingStar = null;
+						scheduleShootingStar();
+						return;
+					}
+
+					const easedProgress = 1 - Math.pow(1 - progress, 2);
+					const opacity = Math.sin(Math.PI * progress) * 0.8;
+					const directionX = Math.cos(shootingStar.angle);
+					const directionY = Math.sin(shootingStar.angle);
+					const headX = shootingStar.x + directionX * shootingStar.travel * easedProgress;
+					const headY = shootingStar.y + directionY * shootingStar.travel * easedProgress;
+					const tailLength = shootingStar.length * Math.min(1, progress * 4);
+					const tailX = headX - directionX * tailLength;
+					const tailY = headY - directionY * tailLength;
+					const trail = context.createLinearGradient(tailX, tailY, headX, headY);
+					trail.addColorStop(0, `rgba(${colour}, 0)`);
+					trail.addColorStop(0.75, `rgba(${colour}, ${opacity * 0.25})`);
+					trail.addColorStop(1, `rgba(${colour}, ${opacity})`);
+
+					context.save();
+					context.beginPath();
+					context.moveTo(tailX, tailY);
+					context.lineTo(headX, headY);
+					context.strokeStyle = trail;
+					context.lineWidth = 1.15;
+					context.shadowColor = `rgba(${colour}, ${opacity * 0.55})`;
+					context.shadowBlur = 5;
+					context.stroke();
+					context.beginPath();
+					context.arc(headX, headY, 1.1, 0, Math.PI * 2);
+					context.fillStyle = `rgba(${colour}, ${opacity})`;
+					context.fill();
+					context.restore();
+				};
+
+				const drawField = (timestamp = performance.now()) => {
+					drawFrame = 0;
+					if (!context) return;
+					context.clearRect(0, 0, window.innerWidth, window.innerHeight);
+					const visiblePoints = points.map(displacedPoint);
+
+					for (let index = 0; index < visiblePoints.length; index += 1) {
+						const first = visiblePoints[index];
+						for (let nextIndex = index + 1; nextIndex < visiblePoints.length; nextIndex += 1) {
+							const second = visiblePoints[nextIndex];
+							const gap = Math.hypot(first.x - second.x, first.y - second.y);
+							if (gap > 142) continue;
+							const middleX = (first.x + second.x) / 2;
+							const middleY = (first.y + second.y) / 2;
+							const cursorDistance = Math.hypot(middleX - pointer.x, middleY - pointer.y);
+							const cursorInfluence = pointer.active && !reducedMotion
+								? Math.max(0, 1 - cursorDistance / 260)
+								: 0;
+							const distanceFade = 1 - gap / 142;
+							const alpha = distanceFade * (baseLineOpacity + cursorInfluence * 0.2);
+							context.beginPath();
+							context.moveTo(first.x, first.y);
+							context.lineTo(second.x, second.y);
+							context.strokeStyle = `rgba(${colour}, ${alpha})`;
+							context.lineWidth = 0.75;
+							context.stroke();
+						}
+					}
+
+					for (const point of visiblePoints) {
+						const cursorDistance = pointer.active && !reducedMotion
+							? Math.hypot(point.x - pointer.x, point.y - pointer.y)
+							: 500;
+						const influence = Math.max(0, 1 - cursorDistance / 230);
+						context.beginPath();
+						context.arc(point.x, point.y, point.size + influence * 0.55, 0, Math.PI * 2);
+						context.fillStyle = `rgba(${colour}, ${baseDotOpacity + influence * 0.28})`;
+						context.fill();
+					}
+
+					drawShootingStar(timestamp);
+					if (shootingStar) requestDraw();
+				};
+
+				const requestDraw = () => {
+					if (!drawFrame) drawFrame = window.requestAnimationFrame(drawField);
+				};
+
+				const resizeField = () => {
+					if (!context) return;
+					const scale = Math.min(window.devicePixelRatio || 1, 2);
+					ambientCanvas.width = Math.floor(window.innerWidth * scale);
+					ambientCanvas.height = Math.floor(window.innerHeight * scale);
+					context.setTransform(scale, 0, 0, scale, 0, 0);
+					createPoints();
+					requestDraw();
+				};
+
+				window.addEventListener('pointermove', (event) => {
+					pointer.x = event.clientX;
+					pointer.y = event.clientY;
+					pointer.active = true;
+					requestDraw();
+				}, { passive: true });
+				window.addEventListener('pointerout', (event) => {
+					if (event.relatedTarget) return;
+					pointer.active = false;
+					requestDraw();
+				});
+				window.addEventListener('resize', resizeField, { passive: true });
+				window.addEventListener('themechange', () => {
+					syncColour();
+					requestDraw();
+				});
+				document.addEventListener('visibilitychange', () => {
+					if (document.hidden) {
+						window.clearTimeout(shootingTimer);
+						shootingStar = null;
+						return;
+					}
+					scheduleShootingStar();
+				});
+
+				syncColour();
+				resizeField();
+				scheduleShootingStar();
+			}
+		</script>
+	</body>
+</html>
