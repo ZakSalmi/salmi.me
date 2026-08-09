@@ -447,6 +447,30 @@ article a {
 	margin-top: 0.35rem;
 }
 
+.not-found {
+	max-width: 32rem;
+	margin: 5rem auto;
+	text-align: center;
+}
+
+.not-found-code {
+	margin-bottom: 0.35rem;
+	color: var(--accent);
+	font-size: 0.75rem;
+	font-weight: 700;
+	letter-spacing: 0.12em;
+}
+
+.not-found h1 {
+	margin-bottom: 0.65rem;
+}
+
+.not-found a {
+	display: inline-block;
+	margin-top: 1rem;
+	color: var(--accent);
+}
+
 time {
 	color: var(--muted);
 	font-size: 0.75rem;

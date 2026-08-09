@@ -20,7 +20,12 @@ const { post } = Astro.props;
 const { Content } = await render(post);
 ---
 
-<BaseLayout title={post.data.title} description={post.data.description}>
+<BaseLayout
+	title={post.data.title}
+	description={post.data.description}
+	type="article"
+	publishedAt={post.data.publishedAt}
+>
 	<article>
 		<h1>{post.data.title}</h1>
 		<time datetime={post.data.publishedAt.toISOString()}>

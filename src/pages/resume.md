@@ -67,4 +67,4 @@ First-author research on an LSTM-GAN architecture for synthetic time-series gene
 
 **Applied AI:** RAG pipelines, embeddings, vector databases, and production LLM systems.
 
-**Languages:** Arabic, English, French, and Basic German (B1 Goethe insitute).
+**Languages:** Arabic, English, French, and Basic German (B1 Goethe Institute).
