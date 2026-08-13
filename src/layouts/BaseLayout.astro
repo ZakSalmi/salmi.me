@@ -62,6 +62,7 @@ const navigation = [
 	</head>
 	<body>
 		<canvas class="ambient-field" aria-hidden="true"></canvas>
+		<div class="ambient-moment" aria-hidden="true"></div>
 		<a class="skip-link" href="#main-content">Skip to content</a>
 		<header>
 			<a class="site-name" href="/" aria-label="Zakaria Salmi, home">
@@ -95,7 +96,9 @@ const navigation = [
 			const themeToggle = document.querySelector<HTMLButtonElement>('.theme-toggle');
 			const themeLabel = themeToggle?.querySelector<HTMLElement>('.theme-toggle-label');
 			const systemTheme = window.matchMedia('(prefers-color-scheme: dark)');
+			const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 			const ambientCanvas = document.querySelector<HTMLCanvasElement>('.ambient-field');
+			const ambientMoment = document.querySelector<HTMLElement>('.ambient-moment');
 
 			const currentTheme = () =>
 				root.dataset.theme ?? (systemTheme.matches ? 'dark' : 'light');
@@ -118,9 +121,62 @@ const navigation = [
 				window.dispatchEvent(new Event('themechange'));
 			});
 
+			systemTheme.addEventListener('change', () => {
+				if (root.dataset.theme) return;
+				updateThemeControl();
+				window.dispatchEvent(new Event('themechange'));
+			});
+
+			if (ambientMoment && !reducedMotion) {
+				let appearanceTimer = 0;
+				let disappearanceTimer = 0;
+
+				const stopAmbientMoment = () => {
+					window.clearTimeout(appearanceTimer);
+					window.clearTimeout(disappearanceTimer);
+					ambientMoment.classList.remove('is-active');
+				};
+
+				const scheduleAmbientMoment = (firstAppearance = false) => {
+					if (document.hidden) return;
+					window.clearTimeout(appearanceTimer);
+					const delay = firstAppearance
+						? 5000 + Math.random() * 5000
+						: 18000 + Math.random() * 22000;
+
+					appearanceTimer = window.setTimeout(() => {
+						const duration = 5000 + Math.random() * 2500;
+						ambientMoment.dataset.ambientTheme = currentTheme();
+						ambientMoment.style.setProperty('--ambient-x', `${12 + Math.random() * 76}%`);
+						ambientMoment.style.setProperty('--ambient-y', `${8 + Math.random() * 46}%`);
+						ambientMoment.style.setProperty('--ambient-rotation', `${-16 + Math.random() * 32}deg`);
+						ambientMoment.style.setProperty('--ambient-duration', `${duration}ms`);
+						ambientMoment.classList.add('is-active');
+
+						disappearanceTimer = window.setTimeout(() => {
+							ambientMoment.classList.remove('is-active');
+							scheduleAmbientMoment();
+						}, duration);
+					}, delay);
+				};
+
+				window.addEventListener('themechange', () => {
+					stopAmbientMoment();
+					scheduleAmbientMoment(true);
+				});
+				document.addEventListener('visibilitychange', () => {
+					if (document.hidden) {
+						stopAmbientMoment();
+						return;
+					}
+					scheduleAmbientMoment(true);
+				});
+
+				scheduleAmbientMoment(true);
+			}
+
 			if (ambientCanvas) {
 				const context = ambientCanvas.getContext('2d');
-				const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 				const pointer = { x: 0, y: 0, active: false };
 				let points: Array<{ x: number; y: number; size: number }> = [];
 				let colour = '20, 38, 58';
@@ -185,18 +241,18 @@ const navigation = [
 					if (reducedMotion || document.hidden) return;
 					window.clearTimeout(shootingTimer);
 					const delay = firstShootingStar
-						? 3500 + Math.random() * 3500
-						: 5000 + Math.random() * 3000;
+						? 1500 + Math.random() * 1500
+						: 2500 + Math.random() * 2000;
 					firstShootingStar = false;
 					shootingTimer = window.setTimeout(() => {
 						shootingStar = {
 							x: -80 + Math.random() * window.innerWidth * 0.6,
 							y: 20 + Math.random() * window.innerHeight * 0.42,
 							angle: 0.28 + Math.random() * 0.22,
-							length: 75 + Math.random() * 55,
-							travel: 260 + Math.random() * 180,
+							length: 100 + Math.random() * 70,
+							travel: 300 + Math.random() * 210,
 							startedAt: performance.now(),
-							duration: 850 + Math.random() * 450,
+							duration: 1050 + Math.random() * 500,
 						};
 						requestDraw();
 					}, delay);
@@ -212,7 +268,7 @@ const navigation = [
 					}
 
 					const easedProgress = 1 - Math.pow(1 - progress, 2);
-					const opacity = Math.sin(Math.PI * progress) * 0.8;
+					const opacity = Math.sin(Math.PI * progress);
 					const directionX = Math.cos(shootingStar.angle);
 					const directionY = Math.sin(shootingStar.angle);
 					const headX = shootingStar.x + directionX * shootingStar.travel * easedProgress;
@@ -222,7 +278,7 @@ const navigation = [
 					const tailY = headY - directionY * tailLength;
 					const trail = context.createLinearGradient(tailX, tailY, headX, headY);
 					trail.addColorStop(0, `rgba(${colour}, 0)`);
-					trail.addColorStop(0.75, `rgba(${colour}, ${opacity * 0.25})`);
+					trail.addColorStop(0.68, `rgba(${colour}, ${opacity * 0.32})`);
 					trail.addColorStop(1, `rgba(${colour}, ${opacity})`);
 
 					context.save();
@@ -230,12 +286,12 @@ const navigation = [
 					context.moveTo(tailX, tailY);
 					context.lineTo(headX, headY);
 					context.strokeStyle = trail;
-					context.lineWidth = 1.15;
-					context.shadowColor = `rgba(${colour}, ${opacity * 0.55})`;
-					context.shadowBlur = 5;
+					context.lineWidth = 1.5;
+					context.shadowColor = `rgba(${colour}, ${opacity * 0.7})`;
+					context.shadowBlur = 8;
 					context.stroke();
 					context.beginPath();
-					context.arc(headX, headY, 1.1, 0, Math.PI * 2);
+					context.arc(headX, headY, 1.4, 0, Math.PI * 2);
 					context.fillStyle = `rgba(${colour}, ${opacity})`;
 					context.fill();
 					context.restore();

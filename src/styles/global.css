@@ -45,6 +45,113 @@ body {
 	pointer-events: none;
 }
 
+.ambient-moment {
+	--ambient-x: 50%;
+	--ambient-y: 24%;
+	--ambient-rotation: 0deg;
+	--ambient-duration: 6s;
+	position: fixed;
+	inset: -12vh -12vw;
+	z-index: -2;
+	opacity: 0;
+	pointer-events: none;
+	will-change: opacity;
+}
+
+.ambient-moment::before,
+.ambient-moment::after {
+	position: absolute;
+	inset: 0;
+	content: '';
+	filter: blur(54px);
+	transform: rotate(var(--ambient-rotation)) scale(1.02);
+	transform-origin: var(--ambient-x) var(--ambient-y);
+	will-change: transform;
+}
+
+.ambient-moment[data-ambient-theme="dark"]::before {
+	background:
+		radial-gradient(
+			ellipse 42% 18% at var(--ambient-x) var(--ambient-y),
+			rgba(91, 255, 195, 0.2),
+			rgba(38, 186, 207, 0.1) 42%,
+			transparent 72%
+		),
+		radial-gradient(
+			ellipse 30% 14% at calc(var(--ambient-x) + 18%) calc(var(--ambient-y) + 8%),
+			rgba(86, 167, 255, 0.16),
+			transparent 72%
+		);
+}
+
+.ambient-moment[data-ambient-theme="dark"]::after {
+	background: radial-gradient(
+		ellipse 38% 12% at calc(var(--ambient-x) - 14%) calc(var(--ambient-y) + 11%),
+		rgba(162, 103, 255, 0.13),
+		transparent 74%
+	);
+}
+
+.ambient-moment[data-ambient-theme="light"]::before {
+	background: radial-gradient(
+		ellipse 34% 25% at var(--ambient-x) var(--ambient-y),
+		rgba(255, 190, 72, 0.17),
+		rgba(255, 220, 143, 0.09) 46%,
+		transparent 74%
+	);
+}
+
+.ambient-moment[data-ambient-theme="light"]::after {
+	background: linear-gradient(
+		calc(112deg + var(--ambient-rotation)),
+		transparent 31%,
+		rgba(255, 210, 120, 0.04) 42%,
+		rgba(255, 237, 196, 0.14) 50%,
+		rgba(255, 210, 120, 0.04) 58%,
+		transparent 69%
+	);
+	filter: blur(38px);
+	-webkit-mask-image: radial-gradient(ellipse 50% 55% at var(--ambient-x) var(--ambient-y), black, transparent 75%);
+	mask-image: radial-gradient(ellipse 50% 55% at var(--ambient-x) var(--ambient-y), black, transparent 75%);
+}
+
+.ambient-moment.is-active {
+	animation: ambient-appear var(--ambient-duration) ease-in-out both;
+}
+
+.ambient-moment.is-active::before,
+.ambient-moment.is-active::after {
+	animation: ambient-drift var(--ambient-duration) ease-in-out both;
+}
+
+@keyframes ambient-appear {
+	0%, 100% {
+		opacity: 0;
+	}
+
+	20%, 58% {
+		opacity: 1;
+	}
+
+	78% {
+		opacity: 0.55;
+	}
+}
+
+@keyframes ambient-drift {
+	0% {
+		transform: rotate(var(--ambient-rotation)) translate3d(-2%, 1%, 0) scale(1);
+	}
+
+	55% {
+		transform: rotate(var(--ambient-rotation)) translate3d(2%, -1%, 0) scale(1.06);
+	}
+
+	100% {
+		transform: rotate(var(--ambient-rotation)) translate3d(5%, -2%, 0) scale(1.1);
+	}
+}
+
 header {
 	display: flex;
 	align-items: center;
@@ -593,6 +700,10 @@ footer {
 }
 
 @media (prefers-reduced-motion: reduce) {
+	.ambient-moment {
+		display: none;
+	}
+
 	:root:not([data-theme="light"]) .profile-image {
 		transition: none;
 	}
